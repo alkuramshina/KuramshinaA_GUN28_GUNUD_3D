@@ -1,6 +1,6 @@
-﻿public class Frame
+﻿public class FrameScore
 {
-    public Frame(bool isLast = false,
+    public FrameScore(bool isLast = false,
         bool afterStrike = false,
         bool afterSpare = false)
     {

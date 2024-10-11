@@ -8,16 +8,4 @@ public class Game : MonoBehaviour
     
     [SerializeField] private Ball ballPrefab;
     [SerializeField] private Transform ballStartPlace;
-
-    private Frame Frame()
-    {
-        // instantiate pin set in place
-        // instantiate ball in place
-
-        return new Frame();
-    }
-
-    private void Calculate()
-    {
-    }
 }
