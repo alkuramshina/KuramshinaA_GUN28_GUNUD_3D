@@ -1,20 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Objects
 {
     [RequireComponent(typeof(Rigidbody))]
     public class Ball: MonoBehaviour
     {
+        public Action OnFinishMovement;
+        public bool IsMoving { get; private set; } 
+        
         private Rigidbody _rigidbody;
 
         private void Awake()
         {
+            IsMoving = false;
             _rigidbody = GetComponent<Rigidbody>();
         }
         
-        public void Push(float force)
+        public void Throw(Vector3 velocity)
         {
-            _rigidbody.AddForce(Vector3.forward * force, ForceMode.Impulse);
+            IsMoving = true;
+            _rigidbody.AddForce(velocity, ForceMode.Impulse);
         }
     }
 }

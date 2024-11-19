@@ -1,4 +1,6 @@
+using System.Linq;
 using Objects;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Game : MonoBehaviour
@@ -13,17 +15,15 @@ public class Game : MonoBehaviour
     private PinSet _pinSet;
     
     private float _holdDownStartTime;
-    private bool _isBallMoving;
     
     private void Start()
     {
-        NewBall();
-        _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
+        NewRound();
     }
 
     private void Update()
     {
-        if (_isBallMoving) return;
+        if (_ball is null || _ball.IsMoving) return;
         
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -33,10 +33,20 @@ public class Game : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space))
         {
             var holdDownTime = Time.time - _holdDownStartTime;
-            _ball.Push(CalculateHoldDownForce(holdDownTime));
+            _ball.Throw(ballStartPlace.forward * CalculateHoldDownForce(holdDownTime));
         }
     }
-    
+
+    private void FinishRound()
+    {
+        NewRound();
+    }
+
+    private void NewRound()
+    {
+        NewPinSet();
+        NewBall();
+    }
     
     private const float MaxForce = 200f;
     private const float MinForce = 100f;
@@ -53,9 +63,33 @@ public class Game : MonoBehaviour
     {
         if (_ball is not null)
         {
-            Destroy(_ball);
+            Destroy(_ball.gameObject);
         }
 
         _ball = Instantiate(ballPrefab, ballStartPlace.position, Quaternion.identity);
+    }
+    
+    private void NewPinSet()
+    {
+        if (_pinSet is not null)
+        {
+            Destroy(_pinSet.gameObject);
+        }
+
+        _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
+
+        foreach (var pin in _pinSet.Pins)
+        {
+            pin.OnPinDropped += CheckIfPinsStopped;
+        }
+    }
+
+    private void CheckIfPinsStopped()
+    {
+        Debug.Log("Check");
+        if (_pinSet.Pins.All(pin => !pin.IsMoved || pin.IsStopped))
+        {
+            FinishRound();
+        }
     }
 }

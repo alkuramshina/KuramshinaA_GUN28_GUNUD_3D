@@ -6,11 +6,21 @@ namespace Objects
 {
     public class PinSet: MonoBehaviour
     {
-        private List<Pin> _pins;
+        public List<Pin> Pins;
 
         private void Awake()
         {
-            _pins = GetComponents<Pin>().ToList();
+            Pins = GetComponents<Pin>().ToList();
+        }
+
+        private void OnDestroy()
+        {
+            if (Pins is null) return;
+            
+            foreach (var pin in Pins)
+            {
+                Destroy(pin);
+            }
         }
     }
 }
