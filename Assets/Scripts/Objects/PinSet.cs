@@ -8,7 +8,7 @@ namespace Objects
     {
         private List<Pin> _pins;
 
-        private void Start()
+        private void Awake()
         {
             _pins = GetComponents<Pin>().ToList();
         }

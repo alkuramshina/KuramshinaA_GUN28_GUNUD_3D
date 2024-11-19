@@ -23,25 +23,24 @@ public class Game : MonoBehaviour
 
     private void Update()
     {
-        if (!_isBallMoving)
+        if (_isBallMoving) return;
+        
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                _holdDownStartTime = Time.time;
-            }
+            _holdDownStartTime = Time.time;
+        }
 
-            if (Input.GetKeyUp(KeyCode.Space))
-            {
-                var holdDownTime = Time.time - _holdDownStartTime;
-                _ball.Push(CalculateHoldDownForce(holdDownTime));
-            }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            var holdDownTime = Time.time - _holdDownStartTime;
+            _ball.Push(CalculateHoldDownForce(holdDownTime));
         }
     }
     
     
-    private const float MaxForce = 80f;
-    private const float MinForce = 30f;
-    private const float MaxForceHoldDownTime = 2f;
+    private const float MaxForce = 200f;
+    private const float MinForce = 100f;
+    private const float MaxForceHoldDownTime = 3f;
     private static float CalculateHoldDownForce(float holdTime)
     {
         var holdTimeNormalized = Mathf.Clamp01(holdTime / MaxForceHoldDownTime);
