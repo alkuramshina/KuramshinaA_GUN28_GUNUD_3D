@@ -12,64 +12,64 @@
 
     private readonly int _bonusThrows = 0;
 
-    private int _score;
-    private int _throwCount;
+    public int Score { get; private set; }
+    public int ThrowCount { get; private set; }
 
-    private bool _isStrike;
-    private bool _isSpare;
+    public bool IsStrike { get; private set; }
+    public bool IsSpare { get; private set; }
 
     public int Throw(int pinsKnocked)
     {
-        if (_throwCount == 0)
+        if (ThrowCount == 0)
         {
-            _score += pinsKnocked;
-            _isStrike = _score == 10;
+            Score += pinsKnocked;
+            IsStrike = Score == 10;
 
-            if (_isStrike)
+            if (IsStrike)
             {
-                _score += 10;
+                Score += 10;
             }
 
-            _throwCount++;
+            ThrowCount++;
         }
-        else if (_throwCount == 1 && !_isStrike)
+        else if (ThrowCount == 1 && !IsStrike)
         {
-            _score += pinsKnocked;
-            _isSpare = _score == 10;
+            Score += pinsKnocked;
+            IsSpare = Score == 10;
 
-            if (_isSpare)
+            if (IsSpare)
             {
-                _score += 10;
+                Score += 10;
             }
 
-            _throwCount++;
+            ThrowCount++;
         }
-        else if (!_isSpare
+        else if (!IsSpare
                  && _bonusThrows > 0
-                 && _throwCount + _bonusThrows <= 2 + _bonusThrows)
+                 && ThrowCount + _bonusThrows <= 2 + _bonusThrows)
         {
-            _score += pinsKnocked;
-            _throwCount++;
+            Score += pinsKnocked;
+            ThrowCount++;
         }
 
-        return _score;
+        return Score;
     }
 
     private int _strikeScoreUpdatedFrames;
-    public void UpdateStrikeScore(int pinsKnockedNextFrame)
+    public void UpdateScoreIfStrike(int pinsKnockedNextFrame)
     {
-        if (!_isStrike || _strikeScoreUpdatedFrames > 2) return;
+        if (!IsStrike || _strikeScoreUpdatedFrames > 2) return;
 
-        _score += pinsKnockedNextFrame;
+        Score += pinsKnockedNextFrame;
         _strikeScoreUpdatedFrames++;
     }
     
     private int _spareScoreUpdatedFrames;
-    public void UpdateSpareScore(int pinsKnockedNextFrame)
+    public void UpdateScoreIfSpare(int pinsKnockedNextFrame)
     {
-        if (!_isSpare || _spareScoreUpdatedFrames > 1) return;
+        if (!IsSpare || _spareScoreUpdatedFrames > 1) return;
 
-        _score += pinsKnockedNextFrame;
+        Score += pinsKnockedNextFrame;
         _spareScoreUpdatedFrames++;
     }
 }

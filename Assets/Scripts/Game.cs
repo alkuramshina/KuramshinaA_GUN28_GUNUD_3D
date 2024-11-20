@@ -14,15 +14,19 @@ public class Game : MonoBehaviour
     private PinSet _pinSet;
     
     private float _holdDownStartTime;
+
+    private const int FRAME_COUNT = 10;
+    private readonly FrameScore[] _frameScore = new FrameScore[FRAME_COUNT];
+    private int _currentFrame;
     
     private void Start()
     {
-        NewRound();
+        NextFrame();
     }
 
     private void Update()
     {
-        if (_ball is null || _ball.IsMoving) return;
+        if (_ball is null || _ball.IsThrown) return;
         
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -36,16 +40,44 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void FinishRound()
+    // TODO: there suppose to be 2 throws in a frame
+    private void NextFrame()
     {
-        Debug.Log("Finish");
-        Debug.Log($"{_pinSet.Pins.Count(pin => pin.IsMoved && pin.IsStopped)} pins dropped");
-    }
-
-    private void NewRound()
-    {
+        _currentFrame++;
+        Debug.Log($"Frame: {_currentFrame}");
+        
         NewPinSet();
         NewBall();
+
+        var isLast = _currentFrame == FRAME_COUNT;
+        var afterStrike = _currentFrame > 1 && _frameScore[_currentFrame - 2].IsStrike;
+        var afterSpare = _currentFrame > 1 && _frameScore[_currentFrame - 2].IsSpare;
+        
+        _frameScore[_currentFrame - 1] = new FrameScore(isLast, afterStrike, afterSpare);
+    }
+
+    private void FinishFrame()
+    {
+        var pinsDown = _pinSet.Pins.Count(pin => pin.IsFallen);
+        Debug.Log(_frameScore[_currentFrame - 1].Throw(pinsDown));
+
+        if (_currentFrame > 1)
+        {
+            _frameScore[_currentFrame - 2].UpdateScoreIfSpare(pinsDown);
+            _frameScore[_currentFrame - 2].UpdateScoreIfStrike(pinsDown);
+        }
+        
+        if (_currentFrame == FRAME_COUNT)
+        {
+            FinishGame();
+        }
+
+        NextFrame();
+    }
+
+    private void FinishGame()
+    {
+        Debug.Log("Game Finished");
     }
 
     private void NewBall()
@@ -56,6 +88,7 @@ public class Game : MonoBehaviour
         }
 
         _ball = Instantiate(ballPrefab, ballStartPlace.position, Quaternion.identity);
+        _ball.OnFinishMovement += FinishFrame;
     }
     
     private void NewPinSet()
@@ -66,19 +99,6 @@ public class Game : MonoBehaviour
         }
 
         _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
-        
-        foreach (var pin in _pinSet.Pins)
-        {
-            pin.OnPinDropped += CheckIfPinsStopped;
-        }
-    }
-
-    private void CheckIfPinsStopped()
-    {
-        if (_pinSet.Pins.All(pin => !pin.IsMoved || pin.IsStopped))
-        {
-            FinishRound();
-        }
     }
     
     private const float MaxForce = 200f;

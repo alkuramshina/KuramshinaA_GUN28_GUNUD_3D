@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 382698548}
   - component: {fileID: 382698547}
   m_Layer: 5
-  m_Name: Text (TMP) (1)
+  m_Name: Frame score
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1349,7 +1349,7 @@ GameObject:
   - component: {fileID: 1468260355}
   - component: {fileID: 1468260354}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Menu tooltip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

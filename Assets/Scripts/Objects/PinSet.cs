@@ -13,7 +13,7 @@ namespace Objects
             
             foreach (var pin in Pins)
             {
-                Destroy(pin);
+                Destroy(pin.gameObject);
             }
         }
     }
