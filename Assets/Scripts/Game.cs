@@ -47,17 +47,6 @@ public class Game : MonoBehaviour
         NewPinSet();
         NewBall();
     }
-    
-    private const float MaxForce = 200f;
-    private const float MinForce = 100f;
-    private const float MaxForceHoldDownTime = 3f;
-    private static float CalculateHoldDownForce(float holdTime)
-    {
-        var holdTimeNormalized = Mathf.Clamp01(holdTime / MaxForceHoldDownTime);
-        var force = holdTimeNormalized * MaxForce;      
-        
-        return Mathf.Clamp(force, MinForce, MaxForce);
-    }
 
     private void NewBall()
     {
@@ -90,5 +79,16 @@ public class Game : MonoBehaviour
         {
             FinishRound();
         }
+    }
+    
+    private const float MaxForce = 200f;
+    private const float MinForce = 100f;
+    private const float MaxForceHoldDownTime = 3f;
+    private static float CalculateHoldDownForce(float holdTime)
+    {
+        var holdTimeNormalized = Mathf.Clamp01(holdTime / MaxForceHoldDownTime);
+        var force = holdTimeNormalized * MaxForce;
+        
+        return Mathf.Clamp(force, MinForce, MaxForce);
     }
 }
