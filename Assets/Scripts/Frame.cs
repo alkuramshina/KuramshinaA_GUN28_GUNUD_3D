@@ -1,22 +1,25 @@
-﻿public class FrameScore
+﻿public class Frame
 {
-    public FrameScore(bool isLast = false,
+    public Frame(bool isLast = false,
         bool afterStrike = false,
         bool afterSpare = false)
     {
         if (isLast)
         {
-            _bonusThrows = afterStrike ? 2 : afterSpare ? 1 : 0;
+            BonusThrows = afterStrike ? 2 : afterSpare ? 1 : 0;
         }
     }
 
-    private readonly int _bonusThrows = 0;
+    private int BonusThrows { get; }
 
     public int Score { get; private set; }
-    public int ThrowCount { get; private set; }
+    private int ThrowCount { get; set; }
 
     public bool IsStrike { get; private set; }
     public bool IsSpare { get; private set; }
+
+    public bool CanThrow => ThrowCount < 2
+                            || ThrowCount + BonusThrows < 2 + BonusThrows;
 
     public int Throw(int pinsKnocked)
     {
@@ -45,8 +48,8 @@
             ThrowCount++;
         }
         else if (!IsSpare
-                 && _bonusThrows > 0
-                 && ThrowCount + _bonusThrows <= 2 + _bonusThrows)
+                 && BonusThrows > 0
+                 && ThrowCount + BonusThrows <= 2 + BonusThrows)
         {
             Score += pinsKnocked;
             ThrowCount++;

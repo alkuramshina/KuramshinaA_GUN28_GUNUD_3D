@@ -16,8 +16,9 @@ public class Game : MonoBehaviour
     private float _holdDownStartTime;
 
     private const int FRAME_COUNT = 10;
-    private readonly FrameScore[] _frameScore = new FrameScore[FRAME_COUNT];
-    private int _currentFrame;
+    private int _currentFrameNumber;
+    private readonly Frame[] _frames = new Frame[FRAME_COUNT];
+    private Frame CurrentFrame => _frames[_currentFrameNumber - 1];
     
     private void Start()
     {
@@ -39,40 +40,53 @@ public class Game : MonoBehaviour
             _ball.Throw(ballStartPlace.forward * CalculateHoldDownForce(holdDownTime));
         }
     }
-
-    // TODO: there suppose to be 2 throws in a frame
+    
     private void NextFrame()
     {
-        _currentFrame++;
-        Debug.Log($"Frame: {_currentFrame}");
+        _currentFrameNumber++;
+        Debug.Log($"Frame: {_currentFrameNumber}");
         
         NewPinSet();
         NewBall();
 
-        var isLast = _currentFrame == FRAME_COUNT;
-        var afterStrike = _currentFrame > 1 && _frameScore[_currentFrame - 2].IsStrike;
-        var afterSpare = _currentFrame > 1 && _frameScore[_currentFrame - 2].IsSpare;
+        var isLast = _currentFrameNumber == FRAME_COUNT;
+        var afterStrike = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsStrike;
+        var afterSpare = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsSpare;
         
-        _frameScore[_currentFrame - 1] = new FrameScore(isLast, afterStrike, afterSpare);
+        _frames[_currentFrameNumber - 1] = new Frame(isLast, afterStrike, afterSpare);
     }
 
-    private void FinishFrame()
+    private void FinishThrow()
     {
         var pinsDown = _pinSet.Pins.Count(pin => pin.IsFallen);
-        Debug.Log(_frameScore[_currentFrame - 1].Throw(pinsDown));
+        Debug.Log(CurrentFrame.Throw(pinsDown));
 
-        if (_currentFrame > 1)
+        // if there is a previous frame
+        if (_currentFrameNumber - 2 > 0)
         {
-            _frameScore[_currentFrame - 2].UpdateScoreIfSpare(pinsDown);
-            _frameScore[_currentFrame - 2].UpdateScoreIfStrike(pinsDown);
+            _frames[_currentFrameNumber - 2].UpdateScoreIfSpare(pinsDown);
+            _frames[_currentFrameNumber - 2].UpdateScoreIfStrike(pinsDown);
+
+            if (_currentFrameNumber - 3 > 0)
+            {
+                _frames[_currentFrameNumber - 3].UpdateScoreIfStrike(pinsDown);
+            }
         }
-        
-        if (_currentFrame == FRAME_COUNT)
+
+        // if it was the last frame
+        if (_currentFrameNumber == FRAME_COUNT)
         {
             FinishGame();
         }
 
-        NextFrame();
+        if (CurrentFrame.CanThrow)
+        {
+            NewBall();
+        }
+        else
+        {
+            NextFrame();
+        }
     }
 
     private void FinishGame()
@@ -88,13 +102,18 @@ public class Game : MonoBehaviour
         }
 
         _ball = Instantiate(ballPrefab, ballStartPlace.position, Quaternion.identity);
-        _ball.OnFinishMovement += FinishFrame;
+        _ball.OnFinishMovement += FinishThrow;
     }
     
     private void NewPinSet()
     {
         if (_pinSet is not null)
         {
+            foreach (var pin in _pinSet.Pins)
+            {
+                Destroy(pin.gameObject);
+            }
+
             Destroy(_pinSet.gameObject);
         }
 
