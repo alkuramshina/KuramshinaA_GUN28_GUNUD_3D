@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Objects
@@ -7,11 +6,6 @@ namespace Objects
     public class PinSet: MonoBehaviour
     {
         public List<Pin> Pins;
-
-        private void Awake()
-        {
-            Pins = GetComponents<Pin>().ToList();
-        }
 
         private void OnDestroy()
         {

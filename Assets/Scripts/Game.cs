@@ -39,7 +39,8 @@ public class Game : MonoBehaviour
 
     private void FinishRound()
     {
-        NewRound();
+        Debug.Log("Finish");
+        Debug.Log($"{_pinSet.Pins.Count(pin => pin.IsMoved && pin.IsStopped)} pins dropped");
     }
 
     private void NewRound()
@@ -77,7 +78,7 @@ public class Game : MonoBehaviour
         }
 
         _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
-
+        
         foreach (var pin in _pinSet.Pins)
         {
             pin.OnPinDropped += CheckIfPinsStopped;
@@ -86,7 +87,6 @@ public class Game : MonoBehaviour
 
     private void CheckIfPinsStopped()
     {
-        Debug.Log("Check");
         if (_pinSet.Pins.All(pin => !pin.IsMoved || pin.IsStopped))
         {
             FinishRound();
