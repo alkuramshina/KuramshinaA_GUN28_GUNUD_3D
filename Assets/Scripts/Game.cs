@@ -52,17 +52,24 @@ public class Game : MonoBehaviour
     
     private void NextFrame()
     {
-        _currentFrameNumber++;
-        Debug.Log($"Frame: {_currentFrameNumber}");
-        
-        NewPinSet();
-        NewBall(_currentBall);
+        if (_currentFrameNumber == FRAME_COUNT)
+        {
+            FinishGame();
+        }
+        else
+        {
+            _currentFrameNumber++;
+            Debug.Log($"Frame: {_currentFrameNumber}");
 
-        var isLast = _currentFrameNumber == FRAME_COUNT;
-        var afterStrike = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsStrike;
-        var afterSpare = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsSpare;
-        
-        _frames[_currentFrameNumber - 1] = new Frame(isLast, afterStrike, afterSpare);
+            NewPinSet();
+            NewBall(_currentBall);
+
+            var isLast = _currentFrameNumber == FRAME_COUNT;
+            var afterStrike = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsStrike;
+            var afterSpare = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsSpare;
+
+            _frames[_currentFrameNumber - 1] = new Frame(isLast, afterStrike, afterSpare);
+        }
     }
 
     private void FinishThrow()
@@ -80,12 +87,6 @@ public class Game : MonoBehaviour
             {
                 _frames[_currentFrameNumber - 3].UpdateScoreIfStrike(pinsDown);
             }
-        }
-
-        // if it was the last frame
-        if (_currentFrameNumber == FRAME_COUNT)
-        {
-            FinishGame();
         }
 
         if (CurrentFrame.CanThrow)
