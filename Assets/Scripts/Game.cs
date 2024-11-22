@@ -1,4 +1,5 @@
 using System.Linq;
+using HUD;
 using Objects;
 using UnityEngine;
 
@@ -6,10 +7,12 @@ public class Game : MonoBehaviour
 {
     [SerializeField] private PinSet pinSetPrefab;
     [SerializeField] private Transform pinSetPlace;
+    [SerializeField] private BallTypeSO defaultBall;
     
-    [SerializeField] private Ball ballPrefab;
     [SerializeField] private Transform ballStartPlace;
-
+    [SerializeField] private UIController uiController;
+    
+    private BallTypeSO _currentBall;
     private Ball _ball;
     private PinSet _pinSet;
     
@@ -22,6 +25,12 @@ public class Game : MonoBehaviour
     
     private void Start()
     {
+        foreach (var ballToChoose in uiController.BallsToChoose)
+        {
+            ballToChoose.OnClick += NewBall;
+        }
+
+        _currentBall = defaultBall;
         NextFrame();
     }
 
@@ -47,7 +56,7 @@ public class Game : MonoBehaviour
         Debug.Log($"Frame: {_currentFrameNumber}");
         
         NewPinSet();
-        NewBall();
+        NewBall(_currentBall);
 
         var isLast = _currentFrameNumber == FRAME_COUNT;
         var afterStrike = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsStrike;
@@ -81,7 +90,7 @@ public class Game : MonoBehaviour
 
         if (CurrentFrame.CanThrow)
         {
-            NewBall();
+            NewBall(_currentBall);
         }
         else
         {
@@ -94,14 +103,16 @@ public class Game : MonoBehaviour
         Debug.Log("Game Finished");
     }
 
-    private void NewBall()
+    private void NewBall(BallTypeSO ballType)
     {
+        _currentBall = ballType;
+        
         if (_ball is not null)
         {
             Destroy(_ball.gameObject);
         }
 
-        _ball = Instantiate(ballPrefab, ballStartPlace.position, Quaternion.identity);
+        _ball = Instantiate(_currentBall.prefab, ballStartPlace.position, Quaternion.identity);
         _ball.OnFinishMovement += FinishThrow;
     }
     
