@@ -78,11 +78,14 @@ public class Game : MonoBehaviour
 
     private void FinishThrow()
     {
-        var pinsDown = _pinSet.FallenCount - CurrentFrame.Score;
-        
         Debug.Log($"Fallen: { _pinSet.FallenCount}");
 
-        CurrentFrame.Throw(pinsDown);
+        var pinsPreviouslyDown = CurrentFrame.IsStrike || CurrentFrame.IsSpare
+            ? 0
+            : CurrentFrame.Score;
+        var pinsDown = _pinSet.FallenCount - pinsPreviouslyDown;
+        
+        CurrentFrame.AddScore(pinsDown);
             
         // if there is a previous frame
         if (_currentFrameNumber - 2 > 0)
@@ -100,6 +103,11 @@ public class Game : MonoBehaviour
         if (CurrentFrame.CanThrow)
         {
             NewBall();
+
+            if (CurrentFrame.IsStrike)
+            {
+                NewPinSet();
+            }
         }
         else
         {
@@ -118,6 +126,7 @@ public class Game : MonoBehaviour
         
         _currentBall = ballType;
         NewBall();
+        uiController.CloseEscapeMenu();
     }
 
     private void NewBall()

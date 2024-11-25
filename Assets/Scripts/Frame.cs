@@ -8,26 +8,29 @@ public class Frame
     {
         if (isLast)
         {
-            BonusThrows = afterStrike ? 2 : afterSpare ? 1 : 0;
+            BonusThrowCount = afterStrike ? 2 : afterSpare ? 1 : 0;
+            Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
     }
 
-    private int BonusThrows { get; set; }
-
     public int Score { get; private set; }
     private int ThrowCount { get; set; }
+    private int BonusThrowCount { get; set; }
 
     public bool IsStrike { get; private set; }
     public bool IsSpare { get; private set; }
 
     public bool CanThrow => ThrowCount < 2
-                            || BonusThrows > 0;
+                            || BonusThrowCount > 0;
 
-    public int Throw(int pinsKnocked)
+    public int AddScore(int pinsKnocked)
     {
+        if (!CanThrow) return Score;
+        
+        Score += pinsKnocked;
+        
         if (ThrowCount == 0)
         {
-            Score += pinsKnocked;
             IsStrike = Score == 10;
 
             if (IsStrike)
@@ -35,12 +38,9 @@ public class Frame
                 Debug.Log("Strike!");
                 Score += 10;
             }
-
-            ThrowCount++;
         }
         else if (ThrowCount == 1 && !IsStrike)
         {
-            Score += pinsKnocked;
             IsSpare = Score == 10;
 
             if (IsSpare)
@@ -48,16 +48,15 @@ public class Frame
                 Debug.Log("Spare!");
                 Score += 10;
             }
-
-            ThrowCount++;
         }
-        else if (!IsSpare && BonusThrows > 0)
+        else if (!IsSpare && BonusThrowCount > 0)
         {
-            Score += pinsKnocked;
-            ThrowCount++;
-            BonusThrows--;
+            BonusThrowCount--;
+            Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
-
+        
+        ThrowCount++;
+        Debug.Log($"Throws: {ThrowCount}");
         
         Debug.Log($"Score: {Score}");
         return Score;

@@ -959,7 +959,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   escapeMenu: {fileID: 1992095683}
-  BallsToChoose:
+  ballsToChoose:
   - {fileID: 1778164227}
   - {fileID: 23186305}
   - {fileID: 185518788}
@@ -1106,6 +1106,7 @@ MonoBehaviour:
   defaultBall: {fileID: 11400000, guid: 4ebccccfb23e41543a71419b8b729028, type: 2}
   ballStartPlace: {fileID: 1681182798}
   uiController: {fileID: 570706675}
+  frameDelay: 0.5
 --- !u!1 &887312192
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,6 +19,8 @@ namespace HUD
                 ballToChoose.OnClick += onChange;
             }
         }
+
+        public void CloseEscapeMenu() => SetEscapeMenu(false);
         
         private void Awake()
         {
@@ -33,9 +35,7 @@ namespace HUD
             }
         }
 
-        private void SetEscapeMenu(bool isActive)
-        {
-            escapeMenu.gameObject.SetActive(isActive);
-        }
+        private void SetEscapeMenu(bool isActive) 
+            => escapeMenu.gameObject.SetActive(isActive);
     }
 }
