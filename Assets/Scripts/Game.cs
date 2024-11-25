@@ -33,6 +33,9 @@ public class Game : MonoBehaviour
     private void Start()
     {
         uiController.SetBallsToChange(ChangeBall);
+        uiController.UpdateFrameText(1, 1);
+
+        _currentFrameNumber = 1;
         _currentBall = defaultBall;
         NextFrame();
     }
@@ -57,23 +60,13 @@ public class Game : MonoBehaviour
     
     private void NextFrame()
     {
-        if (IsLastFrame)
-        {
-            FinishGame();
-        }
-        else
-        {
-            _currentFrameNumber++;
-            Debug.Log($"Frame: {_currentFrameNumber}");
+        NewPinSet();
+        NewBall();
 
-            NewPinSet();
-            NewBall();
+        var afterStrike = _currentFrameNumber > 1 && PreviousFrame.IsStrike;
+        var afterSpare = _currentFrameNumber > 1 && PreviousFrame.IsSpare;
 
-            var afterStrike = _currentFrameNumber > 1 && PreviousFrame.IsStrike;
-            var afterSpare = _currentFrameNumber > 1 && PreviousFrame.IsSpare;
-
-            _frames[_currentFrameNumber - 1] = new Frame(IsLastFrame, afterStrike, afterSpare);
-        }
+        _frames[_currentFrameNumber - 1] = new Frame(IsLastFrame, afterStrike, afterSpare);
     }
 
     private void FinishThrow()
@@ -103,14 +96,22 @@ public class Game : MonoBehaviour
         if (CurrentFrame.CanThrow)
         {
             NewBall();
+            uiController.UpdateFrameText(_currentFrameNumber, CurrentFrame.ThrowCount + 1);
 
             if (CurrentFrame.IsStrike)
             {
                 NewPinSet();
             }
         }
+        else if (IsLastFrame)
+        {
+            FinishGame();
+        }
         else
         {
+            _currentFrameNumber++;
+            uiController.UpdateFrameText(_currentFrameNumber, 1);
+            
             NextFrame();
         }
     }

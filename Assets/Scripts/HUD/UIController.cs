@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Objects;
+using TMPro;
 using UnityEngine;
 
 namespace HUD
@@ -8,8 +9,9 @@ namespace HUD
     public class UIController: MonoBehaviour
     {
         [SerializeField] private EscapeMenu escapeMenu;
-        
         [SerializeField] private List<BallButton> ballsToChoose;
+        [SerializeField] private TMP_Text frameText;
+        
         public bool EscapeMenuIsOpen => escapeMenu.isActiveAndEnabled;
 
         public void SetBallsToChange(Action<BallTypeSO> onChange)
@@ -18,6 +20,11 @@ namespace HUD
             {
                 ballToChoose.OnClick += onChange;
             }
+        }
+
+        public void UpdateFrameText(int frameNumber, int throwNumber)
+        {
+            frameText.text = $"Frame: {frameNumber}\nThrow: {throwNumber}";
         }
 
         public void CloseEscapeMenu() => SetEscapeMenu(false);

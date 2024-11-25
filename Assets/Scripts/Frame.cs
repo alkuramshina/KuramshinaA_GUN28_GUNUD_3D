@@ -14,7 +14,7 @@ public class Frame
     }
 
     public int Score { get; private set; }
-    private int ThrowCount { get; set; }
+    public int ThrowCount { get; private set; }
     private int BonusThrowCount { get; set; }
 
     public bool IsStrike { get; private set; }
