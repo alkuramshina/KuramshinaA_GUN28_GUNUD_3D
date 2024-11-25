@@ -14,6 +14,7 @@ public class Game : MonoBehaviour
     [SerializeField] private UIController uiController;
 
     [SerializeField] private float frameDelay = .5f;
+    [SerializeField] private PlayerControls playerControls;
     
     private BallTypeSO _currentBall;
     private Ball _ball;
@@ -28,7 +29,6 @@ public class Game : MonoBehaviour
     private bool IsLastFrame => _currentFrameNumber == FRAME_COUNT;
     private Frame CurrentFrame => _frames[_currentFrameNumber - 1];
     private Frame PreviousFrame => _frames[_currentFrameNumber - 2];
-    private Frame PreviousPreviousFrame => _frames[_currentFrameNumber - 3];
 
     private int _totalScore;
     
@@ -43,23 +43,34 @@ public class Game : MonoBehaviour
         
         NextFrame();
     }
-
+    
     private void Update()
     {
-        if (_ball is null|| _pinSet is null 
-                         || _ball.IsThrown
-                         || uiController.EscapeMenuIsOpen) return;
-        
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _holdDownStartTime = Time.time;
-        }
+        if (_ball is null || _pinSet is null
+                          || _ball.IsThrown
+                          || uiController.EscapeMenuIsOpen) return;
 
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            var holdDownTime = Time.time - _holdDownStartTime;
-            _ball.Throw(ballStartPlace.forward * CalculateHoldDownForce(holdDownTime));
+        playerControls.Enable();
+        if (playerControls.State == PlayerControls.ControlState.Thrown)
+        { 
+            _ball.Throw((ballStartPlace.position + playerControls.ThrowAngle) * playerControls.ThrowForce);
+            playerControls.Disable();
         }
+        
+        //Step 1: aim
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     _holdDownStartTime = Time.time;
+        // }
+        //
+        // if (Input.GetKeyUp(KeyCode.Space))
+        // {
+        //     var holdDownTime = Time.time - _holdDownStartTime;
+        //     _ball.Throw(ballStartPlace.forward * CalculateHoldDownForce(holdDownTime));
+        // }
+        
+        //Step 2: throw
+        
     }
     
     private void NextFrame()

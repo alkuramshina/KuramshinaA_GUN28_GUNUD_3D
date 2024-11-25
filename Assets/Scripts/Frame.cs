@@ -12,7 +12,6 @@ public class Frame
         if (isLast)
         {
             BonusThrowCount = afterStrike ? 1 : 0;
-            Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
     }
 
@@ -59,16 +58,12 @@ public class Frame
         else if (BonusThrowCount > 0)
         {
             BonusThrowCount--;
-            Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
         
         _frameScoreLayout.SetThrowScore(ThrowCount, currentThrowScore, isCurrentStrike);
         
         ThrowCount++;
         Score += currentThrowScore;
-        
-        Debug.Log($"Throws: {ThrowCount}");
-        Debug.Log($"Score: {Score}");
         
         return Score;
     }
