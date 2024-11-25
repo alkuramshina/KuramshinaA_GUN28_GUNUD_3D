@@ -5580,10 +5580,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pinSetPrefab: {fileID: 2385315297451292309, guid: 591057450acd83d499c184455a2689fe, type: 3}
   pinSetPlace: {fileID: 1321925273}
-  defaultBall: {fileID: 11400000, guid: 4ebccccfb23e41543a71419b8b729028, type: 2}
-  ballStartPlace: {fileID: 1681182798}
+  defaultBallType: {fileID: 11400000, guid: 4ebccccfb23e41543a71419b8b729028, type: 2}
   uiController: {fileID: 570706675}
-  frameDelay: 0.5
+  frameDelay: 0.4
   playerControls: {fileID: 1274374563}
 --- !u!1 &887312192
 GameObject:
@@ -8536,6 +8535,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53eed1478ee14ab9823568bad17b29ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ballStartPlace: {fileID: 1681182798}
 --- !u!1 &1317995616
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,15 +8,14 @@ public class Game : MonoBehaviour
 {
     [SerializeField] private PinSet pinSetPrefab;
     [SerializeField] private Transform pinSetPlace;
-    [SerializeField] private BallTypeSO defaultBall;
+    [SerializeField] private BallTypeSO defaultBallType;
     
-    [SerializeField] private Transform ballStartPlace;
     [SerializeField] private UIController uiController;
 
     [SerializeField] private float frameDelay = .5f;
     [SerializeField] private PlayerControls playerControls;
     
-    private BallTypeSO _currentBall;
+    private BallTypeSO _currentBallType;
     private Ball _ball;
     private PinSet _pinSet;
     
@@ -39,25 +38,18 @@ public class Game : MonoBehaviour
         uiController.SetFrameScoreTextsToDefault();
 
         _currentFrameNumber = 1;
-        _currentBall = defaultBall;
+        _currentBallType = defaultBallType;
         
         NextFrame();
     }
     
     private void Update()
     {
-        if (_ball is null || _pinSet is null
-                          || _ball.IsThrown
-                          || uiController.EscapeMenuIsOpen) return;
-
-        playerControls.Enable();
         if (playerControls.State == PlayerControls.ControlState.Thrown)
         { 
-            _ball.Throw((ballStartPlace.position + playerControls.ThrowAngle) * playerControls.ThrowForce);
-            playerControls.Disable();
+            _ball.Throw(playerControls.ThrowAngle * playerControls.ThrowForce);
         }
         
-        //Step 1: aim
         // if (Input.GetKeyDown(KeyCode.Space))
         // {
         //     _holdDownStartTime = Time.time;
@@ -68,9 +60,6 @@ public class Game : MonoBehaviour
         //     var holdDownTime = Time.time - _holdDownStartTime;
         //     _ball.Throw(ballStartPlace.forward * CalculateHoldDownForce(holdDownTime));
         // }
-        
-        //Step 2: throw
-        
     }
     
     private void NextFrame()
@@ -141,7 +130,7 @@ public class Game : MonoBehaviour
     {
         if (_ball.IsThrown) return;
         
-        _currentBall = ballType;
+        _currentBallType = ballType;
         NewBall();
         uiController.CloseEscapeMenu();
     }
@@ -155,8 +144,9 @@ public class Game : MonoBehaviour
 
         StartCoroutine(FrameDelay(() =>
         {
-            _ball = Instantiate(_currentBall.prefab, ballStartPlace.position, Quaternion.identity);
+            _ball = Instantiate(_currentBallType.prefab, playerControls.BallStartPosition, Quaternion.identity);
             _ball.OnFinishMovement += FinishThrow;
+            playerControls.SetReady();
         }));
     }
     

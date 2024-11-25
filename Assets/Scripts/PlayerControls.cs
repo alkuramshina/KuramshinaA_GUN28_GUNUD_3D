@@ -3,18 +3,16 @@ using UnityEngine;
 
 public class PlayerControls: MonoBehaviour
 {
-    private bool _controlsEnabled;
-    
+    [SerializeField] private Transform ballStartPlace;
+    public Vector3 BallStartPosition => ballStartPlace.position;
     public float ThrowForce { get; private set; }
     public Vector3 ThrowAngle { get; private set; }
     
     private void Update()
     {
-        if (!_controlsEnabled) return;
-        
         switch (State)
         {
-            case ControlState.Idle:
+            case ControlState.Ready:
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     State = ControlState.IsAiming;
@@ -23,7 +21,7 @@ public class PlayerControls: MonoBehaviour
             case ControlState.IsAiming:
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    ThrowAngle = Vector3.forward;
+                    ThrowAngle = ballStartPlace.forward;
                     State = ControlState.IsForcing;
                 }
                 break;
@@ -59,11 +57,10 @@ public class PlayerControls: MonoBehaviour
     }
     
     public ControlState State { get; private set; }
-    public void Enable() => _controlsEnabled = true;
-    public void Disable() => _controlsEnabled = false;
+    public void SetReady() => State = ControlState.Ready;
     public enum ControlState
     {
-        Idle,
+        Ready,
         IsAiming,
         IsForcing,
         Thrown

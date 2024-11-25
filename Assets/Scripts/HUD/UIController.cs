@@ -51,7 +51,10 @@ namespace HUD
             }
         }
 
-        private void SetEscapeMenu(bool isActive) 
-            => escapeMenu.gameObject.SetActive(isActive);
+        private void SetEscapeMenu(bool isActive)
+        {
+            escapeMenu.gameObject.SetActive(isActive);
+            Time.timeScale = isActive ? 0 : 1;
+        }
     }
 }
