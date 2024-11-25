@@ -52,6 +52,7 @@
     <Compile Include="Assets\Scripts\Game.cs" />
     <Compile Include="Assets\Scripts\Objects\BallType.cs" />
     <Compile Include="Assets\Scripts\Objects\Ball.cs" />
+    <Compile Include="Assets\Scripts\HUD\FrameScoreLayout.cs" />
     <Compile Include="Assets\Scripts\Objects\Pin.cs" />
     <Compile Include="Assets\Scripts\Frame.cs" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

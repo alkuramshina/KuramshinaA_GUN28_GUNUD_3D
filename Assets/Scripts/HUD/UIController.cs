@@ -11,6 +11,7 @@ namespace HUD
         [SerializeField] private EscapeMenu escapeMenu;
         [SerializeField] private List<BallButton> ballsToChoose;
         [SerializeField] private TMP_Text frameText;
+        public FrameScoreLayout[] FrameScoreTexts;
         
         public bool EscapeMenuIsOpen => escapeMenu.isActiveAndEnabled;
 
@@ -25,6 +26,14 @@ namespace HUD
         public void UpdateFrameText(int frameNumber, int throwNumber)
         {
             frameText.text = $"Frame: {frameNumber}\nThrow: {throwNumber}";
+        }
+        
+        public void SetFrameScoreTextsToDefault()
+        {
+            foreach (var frameScoreText in FrameScoreTexts)
+            {
+                frameScoreText.SetToDefault();
+            }
         }
 
         public void CloseEscapeMenu() => SetEscapeMenu(false);

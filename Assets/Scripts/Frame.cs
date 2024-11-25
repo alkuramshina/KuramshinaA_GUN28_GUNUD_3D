@@ -1,17 +1,23 @@
-﻿using UnityEngine;
+﻿using HUD;
+using UnityEngine;
 
 public class Frame
 {
-    public Frame(bool isLast = false,
+    public Frame(FrameScoreLayout frameScoreLayout,
+        bool isLast = false,
         bool afterStrike = false,
         bool afterSpare = false)
     {
+        _frameScoreLayout = frameScoreLayout;
+        
         if (isLast)
         {
             BonusThrowCount = afterStrike ? 2 : afterSpare ? 1 : 0;
             Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
     }
+
+    private readonly FrameScoreLayout _frameScoreLayout;
 
     public int Score { get; private set; }
     public int ThrowCount { get; private set; }
@@ -27,26 +33,26 @@ public class Frame
     {
         if (!CanThrow) return Score;
         
-        Score += pinsKnocked;
+        var throwScore = pinsKnocked;
         
         if (ThrowCount == 0)
         {
-            IsStrike = Score == 10;
+            IsStrike = throwScore == 10;
 
             if (IsStrike)
             {
                 Debug.Log("Strike!");
-                Score += 10;
+                throwScore += 10;
             }
         }
         else if (ThrowCount == 1 && !IsStrike)
         {
-            IsSpare = Score == 10;
+            IsSpare = throwScore == 10;
 
             if (IsSpare)
             {
                 Debug.Log("Spare!");
-                Score += 10;
+                throwScore += 10;
             }
         }
         else if (!IsSpare && BonusThrowCount > 0)
@@ -54,11 +60,20 @@ public class Frame
             BonusThrowCount--;
             Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
+        else
+        {
+            _frameScoreLayout.SetThrowScore(2, 0);
+            _frameScoreLayout.SetFrameScore(Score);
+        }
+        
+        _frameScoreLayout.SetThrowScore(ThrowCount, throwScore);
         
         ThrowCount++;
-        Debug.Log($"Throws: {ThrowCount}");
+        Score += throwScore;
         
+        Debug.Log($"Throws: {ThrowCount}");
         Debug.Log($"Score: {Score}");
+        
         return Score;
     }
 
@@ -69,6 +84,8 @@ public class Frame
 
         Score += pinsKnockedNextFrame;
         _strikeScoreUpdatedFrames++;
+        
+        _frameScoreLayout.SetFrameScore(Score);
     }
     
     private int _spareScoreUpdatedFrames;
@@ -78,5 +95,7 @@ public class Frame
 
         Score += pinsKnockedNextFrame;
         _spareScoreUpdatedFrames++;
+        
+        _frameScoreLayout.SetFrameScore(Score);
     }
 }

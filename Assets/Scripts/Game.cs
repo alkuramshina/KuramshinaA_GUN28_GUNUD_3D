@@ -34,6 +34,7 @@ public class Game : MonoBehaviour
     {
         uiController.SetBallsToChange(ChangeBall);
         uiController.UpdateFrameText(1, 1);
+        uiController.SetFrameScoreTextsToDefault();
 
         _currentFrameNumber = 1;
         _currentBall = defaultBall;
@@ -66,7 +67,9 @@ public class Game : MonoBehaviour
         var afterStrike = _currentFrameNumber > 1 && PreviousFrame.IsStrike;
         var afterSpare = _currentFrameNumber > 1 && PreviousFrame.IsSpare;
 
-        _frames[_currentFrameNumber - 1] = new Frame(IsLastFrame, afterStrike, afterSpare);
+        _frames[_currentFrameNumber - 1] = new Frame(uiController.FrameScoreTexts[_currentFrameNumber - 1], 
+            IsLastFrame,
+            afterStrike, afterSpare);
     }
 
     private void FinishThrow()
