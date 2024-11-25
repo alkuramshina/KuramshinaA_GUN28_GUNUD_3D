@@ -8,11 +8,15 @@ namespace HUD
         [SerializeField] private TMP_Text totalScoreText;
         [SerializeField] private TMP_Text[] throwScoreTexts;
 
-        public void SetThrowScore(int throwIndex, int score)
+        public void SetThrowScore(int throwIndex, int score, bool isStrike)
         {
-            if (throwIndex >= throwScoreTexts.Length) return;    
-            
-            throwScoreTexts[throwIndex].text = score > 0 ? $"{score}" : "/";
+            if (throwIndex >= throwScoreTexts.Length || score == 0) return;
+
+            throwScoreTexts[throwIndex].text = isStrike
+                ? "X"
+                : score >= 10
+                    ? "/"
+                    : $"{score}";
         }
 
         public void SetToDefault()

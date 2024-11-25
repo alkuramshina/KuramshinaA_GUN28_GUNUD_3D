@@ -5,14 +5,13 @@ public class Frame
 {
     public Frame(FrameScoreLayout frameScoreLayout,
         bool isLast = false,
-        bool afterStrike = false,
-        bool afterSpare = false)
+        bool afterStrike = false)
     {
         _frameScoreLayout = frameScoreLayout;
         
         if (isLast)
         {
-            BonusThrowCount = afterStrike ? 2 : afterSpare ? 1 : 0;
+            BonusThrowCount = afterStrike ? 1 : 0;
             Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
     }
@@ -33,43 +32,40 @@ public class Frame
     {
         if (!CanThrow) return Score;
         
-        var throwScore = pinsKnocked;
+        var currentThrowScore = pinsKnocked;
+        var isCurrentStrike = false;
         
         if (ThrowCount == 0)
         {
-            IsStrike = throwScore == 10;
+            IsStrike = currentThrowScore == 10;
 
             if (IsStrike)
             {
                 Debug.Log("Strike!");
-                throwScore += 10;
+                currentThrowScore += 10;
+                isCurrentStrike = true;
             }
         }
         else if (ThrowCount == 1 && !IsStrike)
         {
-            IsSpare = throwScore == 10;
+            IsSpare = currentThrowScore + Score == 10;
 
             if (IsSpare)
             {
                 Debug.Log("Spare!");
-                throwScore += 10;
+                currentThrowScore += 10;
             }
         }
-        else if (!IsSpare && BonusThrowCount > 0)
+        else if (BonusThrowCount > 0)
         {
             BonusThrowCount--;
             Debug.Log($"Bonus throws: {BonusThrowCount}");
         }
-        else
-        {
-            _frameScoreLayout.SetThrowScore(2, 0);
-            _frameScoreLayout.SetFrameScore(Score);
-        }
         
-        _frameScoreLayout.SetThrowScore(ThrowCount, throwScore);
+        _frameScoreLayout.SetThrowScore(ThrowCount, currentThrowScore, isCurrentStrike);
         
         ThrowCount++;
-        Score += throwScore;
+        Score += currentThrowScore;
         
         Debug.Log($"Throws: {ThrowCount}");
         Debug.Log($"Score: {Score}");
@@ -77,25 +73,28 @@ public class Frame
         return Score;
     }
 
-    private int _strikeScoreUpdatedFrames;
-    public void UpdateScoreIfStrike(int pinsKnockedNextFrame)
+    public void SetTotalScore(int totalScore)
     {
-        if (!IsStrike || _strikeScoreUpdatedFrames > 2) return;
+        _frameScoreLayout.SetFrameScore(totalScore);
+    }
+
+    private int _strikeScoreUpdatedThrows;
+    public bool UpdateScoreIfStrike(int pinsKnockedNextFrame)
+    {
+        if (!IsStrike || _strikeScoreUpdatedThrows > 2) return false;
 
         Score += pinsKnockedNextFrame;
-        _strikeScoreUpdatedFrames++;
-        
-        _frameScoreLayout.SetFrameScore(Score);
+        _strikeScoreUpdatedThrows++;
+        return true;
     }
     
-    private int _spareScoreUpdatedFrames;
-    public void UpdateScoreIfSpare(int pinsKnockedNextFrame)
+    private int _spareScoreUpdatedThrows;
+    public bool UpdateScoreIfSpare(int pinsKnockedNextFrame)
     {
-        if (!IsSpare || _spareScoreUpdatedFrames > 1) return;
+        if (!IsSpare || _spareScoreUpdatedThrows > 1) return false;
 
         Score += pinsKnockedNextFrame;
-        _spareScoreUpdatedFrames++;
-        
-        _frameScoreLayout.SetFrameScore(Score);
+        _spareScoreUpdatedThrows++;
+        return true;
     }
 }

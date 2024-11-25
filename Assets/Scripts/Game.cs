@@ -29,6 +29,8 @@ public class Game : MonoBehaviour
     private Frame CurrentFrame => _frames[_currentFrameNumber - 1];
     private Frame PreviousFrame => _frames[_currentFrameNumber - 2];
     private Frame PreviousPreviousFrame => _frames[_currentFrameNumber - 3];
+
+    private int _totalScore;
     
     private void Start()
     {
@@ -38,6 +40,7 @@ public class Game : MonoBehaviour
 
         _currentFrameNumber = 1;
         _currentBall = defaultBall;
+        
         NextFrame();
     }
 
@@ -61,21 +64,24 @@ public class Game : MonoBehaviour
     
     private void NextFrame()
     {
+        if (_currentFrameNumber > 1)
+        {
+            _totalScore += PreviousFrame.Score;
+            PreviousFrame.SetTotalScore(_totalScore);
+        }
+
         NewPinSet();
         NewBall();
 
         var afterStrike = _currentFrameNumber > 1 && PreviousFrame.IsStrike;
-        var afterSpare = _currentFrameNumber > 1 && PreviousFrame.IsSpare;
 
         _frames[_currentFrameNumber - 1] = new Frame(uiController.FrameScoreTexts[_currentFrameNumber - 1], 
             IsLastFrame,
-            afterStrike, afterSpare);
+            afterStrike);
     }
 
     private void FinishThrow()
     {
-        Debug.Log($"Fallen: { _pinSet.FallenCount}");
-
         var pinsPreviouslyDown = CurrentFrame.IsStrike || CurrentFrame.IsSpare
             ? 0
             : CurrentFrame.Score;
@@ -84,16 +90,11 @@ public class Game : MonoBehaviour
         CurrentFrame.AddScore(pinsDown);
             
         // if there is a previous frame
-        if (_currentFrameNumber - 2 > 0)
+        if (_currentFrameNumber > 1)
         {
-            PreviousFrame.UpdateScoreIfSpare(pinsDown);
-            PreviousFrame.UpdateScoreIfStrike(pinsDown);
-
-            // if there is a frame before previous
-            if (_currentFrameNumber - 3 > 0)
-            {
-                PreviousPreviousFrame.UpdateScoreIfStrike(pinsDown);
-            }
+            if (PreviousFrame.UpdateScoreIfSpare(pinsDown)) _totalScore += pinsDown;
+            if (PreviousFrame.UpdateScoreIfStrike(pinsDown)) _totalScore += pinsDown;
+            PreviousFrame.SetTotalScore(_totalScore);
         }
 
         if (CurrentFrame.CanThrow)
@@ -121,7 +122,8 @@ public class Game : MonoBehaviour
 
     private void FinishGame()
     {
-        Debug.Log("Game Finished");
+        CurrentFrame.SetTotalScore(_totalScore);
+        Debug.Log($"Game Finished. Total score is {_totalScore}");
     }
 
     private void ChangeBall(BallTypeSO ballType)
