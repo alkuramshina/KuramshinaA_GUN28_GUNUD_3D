@@ -1,4 +1,6 @@
-﻿public class Frame
+﻿using UnityEngine;
+
+public class Frame
 {
     public Frame(bool isLast = false,
         bool afterStrike = false,
@@ -10,7 +12,7 @@
         }
     }
 
-    private int BonusThrows { get; }
+    private int BonusThrows { get; set; }
 
     public int Score { get; private set; }
     private int ThrowCount { get; set; }
@@ -19,7 +21,7 @@
     public bool IsSpare { get; private set; }
 
     public bool CanThrow => ThrowCount < 2
-                            || ThrowCount + BonusThrows < 2 + BonusThrows;
+                            || BonusThrows > 0;
 
     public int Throw(int pinsKnocked)
     {
@@ -30,6 +32,7 @@
 
             if (IsStrike)
             {
+                Debug.Log("Strike!");
                 Score += 10;
             }
 
@@ -42,19 +45,21 @@
 
             if (IsSpare)
             {
+                Debug.Log("Spare!");
                 Score += 10;
             }
 
             ThrowCount++;
         }
-        else if (!IsSpare
-                 && BonusThrows > 0
-                 && ThrowCount + BonusThrows <= 2 + BonusThrows)
+        else if (!IsSpare && BonusThrows > 0)
         {
             Score += pinsKnocked;
             ThrowCount++;
+            BonusThrows--;
         }
 
+        
+        Debug.Log($"Score: {Score}");
         return Score;
     }
 

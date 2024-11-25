@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Objects;
 using UnityEngine;
 
@@ -7,11 +8,21 @@ namespace HUD
     public class UIController: MonoBehaviour
     {
         [SerializeField] private EscapeMenu escapeMenu;
-        public List<BallButton> BallsToChoose;
+        
+        [SerializeField] private List<BallButton> ballsToChoose;
+        public bool EscapeMenuIsOpen => escapeMenu.isActiveAndEnabled;
 
+        public void SetBallsToChange(Action<BallTypeSO> onChange)
+        {
+            foreach (var ballToChoose in ballsToChoose)
+            {
+                ballToChoose.OnClick += onChange;
+            }
+        }
+        
         private void Awake()
         {
-            escapeMenu.gameObject.SetActive(false);
+            SetEscapeMenu(false);
         }
 
         private void Update()
@@ -22,7 +33,7 @@ namespace HUD
             }
         }
 
-        public void SetEscapeMenu(bool isActive)
+        private void SetEscapeMenu(bool isActive)
         {
             escapeMenu.gameObject.SetActive(isActive);
         }

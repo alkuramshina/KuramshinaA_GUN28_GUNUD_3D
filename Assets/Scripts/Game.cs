@@ -1,4 +1,5 @@
-using System.Linq;
+using System;
+using System.Collections;
 using HUD;
 using Objects;
 using UnityEngine;
@@ -11,6 +12,8 @@ public class Game : MonoBehaviour
     
     [SerializeField] private Transform ballStartPlace;
     [SerializeField] private UIController uiController;
+
+    [SerializeField] private float frameDelay = .5f;
     
     private BallTypeSO _currentBall;
     private Ball _ball;
@@ -20,23 +23,25 @@ public class Game : MonoBehaviour
 
     private const int FRAME_COUNT = 10;
     private int _currentFrameNumber;
+    
     private readonly Frame[] _frames = new Frame[FRAME_COUNT];
+    private bool IsLastFrame => _currentFrameNumber == FRAME_COUNT;
     private Frame CurrentFrame => _frames[_currentFrameNumber - 1];
+    private Frame PreviousFrame => _frames[_currentFrameNumber - 2];
+    private Frame PreviousPreviousFrame => _frames[_currentFrameNumber - 3];
     
     private void Start()
     {
-        foreach (var ballToChoose in uiController.BallsToChoose)
-        {
-            ballToChoose.OnClick += NewBall;
-        }
-
+        uiController.SetBallsToChange(ChangeBall);
         _currentBall = defaultBall;
         NextFrame();
     }
 
     private void Update()
     {
-        if (_ball is null || _ball.IsThrown) return;
+        if (_ball is null|| _pinSet is null 
+                         || _ball.IsThrown
+                         || uiController.EscapeMenuIsOpen) return;
         
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -52,7 +57,7 @@ public class Game : MonoBehaviour
     
     private void NextFrame()
     {
-        if (_currentFrameNumber == FRAME_COUNT)
+        if (IsLastFrame)
         {
             FinishGame();
         }
@@ -62,36 +67,39 @@ public class Game : MonoBehaviour
             Debug.Log($"Frame: {_currentFrameNumber}");
 
             NewPinSet();
-            NewBall(_currentBall);
+            NewBall();
 
-            var isLast = _currentFrameNumber == FRAME_COUNT;
-            var afterStrike = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsStrike;
-            var afterSpare = _currentFrameNumber > 1 && _frames[_currentFrameNumber - 2].IsSpare;
+            var afterStrike = _currentFrameNumber > 1 && PreviousFrame.IsStrike;
+            var afterSpare = _currentFrameNumber > 1 && PreviousFrame.IsSpare;
 
-            _frames[_currentFrameNumber - 1] = new Frame(isLast, afterStrike, afterSpare);
+            _frames[_currentFrameNumber - 1] = new Frame(IsLastFrame, afterStrike, afterSpare);
         }
     }
 
     private void FinishThrow()
     {
-        var pinsDown = _pinSet.Pins.Count(pin => pin.IsFallen);
-        Debug.Log(CurrentFrame.Throw(pinsDown));
+        var pinsDown = _pinSet.FallenCount - CurrentFrame.Score;
+        
+        Debug.Log($"Fallen: { _pinSet.FallenCount}");
 
+        CurrentFrame.Throw(pinsDown);
+            
         // if there is a previous frame
         if (_currentFrameNumber - 2 > 0)
         {
-            _frames[_currentFrameNumber - 2].UpdateScoreIfSpare(pinsDown);
-            _frames[_currentFrameNumber - 2].UpdateScoreIfStrike(pinsDown);
+            PreviousFrame.UpdateScoreIfSpare(pinsDown);
+            PreviousFrame.UpdateScoreIfStrike(pinsDown);
 
+            // if there is a frame before previous
             if (_currentFrameNumber - 3 > 0)
             {
-                _frames[_currentFrameNumber - 3].UpdateScoreIfStrike(pinsDown);
+                PreviousPreviousFrame.UpdateScoreIfStrike(pinsDown);
             }
         }
 
         if (CurrentFrame.CanThrow)
         {
-            NewBall(_currentBall);
+            NewBall();
         }
         else
         {
@@ -104,32 +112,45 @@ public class Game : MonoBehaviour
         Debug.Log("Game Finished");
     }
 
-    private void NewBall(BallTypeSO ballType)
+    private void ChangeBall(BallTypeSO ballType)
     {
-        _currentBall = ballType;
+        if (_ball.IsThrown) return;
         
+        _currentBall = ballType;
+        NewBall();
+    }
+
+    private void NewBall()
+    {
         if (_ball is not null)
         {
             Destroy(_ball.gameObject);
         }
 
-        _ball = Instantiate(_currentBall.prefab, ballStartPlace.position, Quaternion.identity);
-        _ball.OnFinishMovement += FinishThrow;
+        StartCoroutine(FrameDelay(() =>
+        {
+            _ball = Instantiate(_currentBall.prefab, ballStartPlace.position, Quaternion.identity);
+            _ball.OnFinishMovement += FinishThrow;
+        }));
     }
     
     private void NewPinSet()
     {
         if (_pinSet is not null)
         {
-            foreach (var pin in _pinSet.Pins)
-            {
-                Destroy(pin.gameObject);
-            }
-
             Destroy(_pinSet.gameObject);
         }
 
-        _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
+        StartCoroutine(FrameDelay(() =>
+        {
+            _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
+        }));
+    }
+
+    private IEnumerator FrameDelay(Action action)
+    {
+        yield return new WaitForSeconds(frameDelay);
+        action?.Invoke();
     }
     
     private const float MaxForce = 200f;
