@@ -45,21 +45,10 @@ public class Game : MonoBehaviour
     
     private void Update()
     {
-        if (playerControls.State == PlayerControls.ControlState.Thrown)
+        if (playerControls.State == PlayerControls.ControlState.Thrown && !_ball.IsThrown)
         { 
-            _ball.Throw(playerControls.ThrowAngle * playerControls.ThrowForce);
+            _ball.Throw(playerControls.ChosenVelocity);
         }
-        
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     _holdDownStartTime = Time.time;
-        // }
-        //
-        // if (Input.GetKeyUp(KeyCode.Space))
-        // {
-        //     var holdDownTime = Time.time - _holdDownStartTime;
-        //     _ball.Throw(ballStartPlace.forward * CalculateHoldDownForce(holdDownTime));
-        // }
     }
     
     private void NextFrame()
@@ -94,6 +83,7 @@ public class Game : MonoBehaviour
         {
             if (PreviousFrame.UpdateScoreIfSpare(pinsDown)) _totalScore += pinsDown;
             if (PreviousFrame.UpdateScoreIfStrike(pinsDown)) _totalScore += pinsDown;
+            
             PreviousFrame.SetTotalScore(_totalScore);
         }
 
@@ -142,10 +132,11 @@ public class Game : MonoBehaviour
             Destroy(_ball.gameObject);
         }
 
-        StartCoroutine(FrameDelay(() =>
+        StartCoroutine(DelayAction(() =>
         {
             _ball = Instantiate(_currentBallType.prefab, playerControls.BallStartPosition, Quaternion.identity);
             _ball.OnFinishMovement += FinishThrow;
+            
             playerControls.SetReady();
         }));
     }
@@ -157,13 +148,13 @@ public class Game : MonoBehaviour
             Destroy(_pinSet.gameObject);
         }
 
-        StartCoroutine(FrameDelay(() =>
+        StartCoroutine(DelayAction(() =>
         {
             _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
         }));
     }
 
-    private IEnumerator FrameDelay(Action action)
+    private IEnumerator DelayAction(Action action)
     {
         yield return new WaitForSeconds(frameDelay);
         action?.Invoke();

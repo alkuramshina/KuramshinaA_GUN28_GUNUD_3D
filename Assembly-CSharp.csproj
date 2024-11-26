@@ -762,6 +762,9 @@
     <Reference Include="Unity.VSCode.Editor">
       <HintPath>C:\Projects\Unity\Netology\KuramshinaA_GUN28_GUNUD_3D\Library\ScriptAssemblies\Unity.VSCode.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>C:\Projects\Unity\Netology\KuramshinaA_GUN28_GUNUD_3D\Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.VisualScripting.Flow">
       <HintPath>C:\Projects\Unity\Netology\KuramshinaA_GUN28_GUNUD_3D\Library\ScriptAssemblies\Unity.VisualScripting.Flow.dll</HintPath>
     </Reference>

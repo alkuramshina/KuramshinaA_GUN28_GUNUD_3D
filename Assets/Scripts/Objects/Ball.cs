@@ -38,6 +38,7 @@ namespace Objects
         public void Throw(Vector3 velocity)
         {
             IsThrown = true;
+            
             _rigidbody.AddForce(velocity, ForceMode.Impulse);
         }
 
