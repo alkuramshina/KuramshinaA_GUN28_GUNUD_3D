@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Audio;
 using HUD;
 using Objects;
 using UnityEngine;
@@ -14,6 +15,8 @@ public class Game : MonoBehaviour
 
     [SerializeField] private float frameDelay = .5f;
     [SerializeField] private PlayerControls playerControls;
+
+    [SerializeField] private AudioController audioController;
     
     private BallTypeSO _currentBallType;
     private Ball _ball;
@@ -36,7 +39,7 @@ public class Game : MonoBehaviour
         uiController.SetBallsToChange(ChangeBall);
         uiController.UpdateFrameText(1, 1);
         uiController.SetFrameScoreTextsToDefault();
-
+        
         _currentFrameNumber = 1;
         _currentBallType = defaultBallType;
         
@@ -47,6 +50,7 @@ public class Game : MonoBehaviour
     {
         if (playerControls.State == PlayerControls.ControlState.Thrown && !_ball.IsThrown)
         { 
+            audioController.PlayThrowingSound();
             _ball.Throw(playerControls.ChosenVelocity);
         }
     }
@@ -113,6 +117,8 @@ public class Game : MonoBehaviour
     private void FinishGame()
     {
         CurrentFrame.SetTotalScore(_totalScore);
+        audioController.PlayVictorySound();
+        uiController.OpenEscapeMenu();
         Debug.Log($"Game Finished. Total score is {_totalScore}");
     }
 
@@ -151,6 +157,7 @@ public class Game : MonoBehaviour
         StartCoroutine(DelayAction(() =>
         {
             _pinSet = Instantiate(pinSetPrefab, pinSetPlace.position, Quaternion.identity);
+            _pinSet.SetCollisions(audioController.PlayPinFallingSound);
         }));
     }
 

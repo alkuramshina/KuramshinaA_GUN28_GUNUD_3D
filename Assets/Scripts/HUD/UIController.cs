@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Audio;
 using Objects;
 using TMPro;
 using UnityEngine;
@@ -11,10 +12,10 @@ namespace HUD
         [SerializeField] private EscapeMenu escapeMenu;
         [SerializeField] private List<BallButton> ballsToChoose;
         [SerializeField] private TMP_Text frameText;
+        [SerializeField] private AudioController audioController;
+        
         public FrameScoreLayout[] FrameScoreTexts;
         
-        public bool EscapeMenuIsOpen => escapeMenu.isActiveAndEnabled;
-
         public void SetBallsToChange(Action<BallTypeSO> onChange)
         {
             foreach (var ballToChoose in ballsToChoose)
@@ -37,16 +38,22 @@ namespace HUD
         }
 
         public void CloseEscapeMenu() => SetEscapeMenu(false);
+        public void OpenEscapeMenu() => SetEscapeMenu(true);
         
         private void Awake()
         {
             SetEscapeMenu(false);
+            foreach (var ballToChoose in ballsToChoose)
+            {
+                ballToChoose.OnClick += _ => {audioController.PlayBallChoosingSound();};
+            }
         }
 
         private void Update()
         {
             if (Input.GetKeyUp(KeyCode.Escape))
             {
+                audioController.PlayMenuSound();
                 SetEscapeMenu(!escapeMenu.isActiveAndEnabled);
             }
         }
@@ -54,6 +61,7 @@ namespace HUD
         private void SetEscapeMenu(bool isActive)
         {
             escapeMenu.gameObject.SetActive(isActive);
+            
             Time.timeScale = isActive ? 0 : 1;
         }
     }

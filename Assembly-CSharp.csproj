@@ -53,8 +53,10 @@
     <Compile Include="Assets\Scripts\Objects\BallType.cs" />
     <Compile Include="Assets\Scripts\Objects\Ball.cs" />
     <Compile Include="Assets\Scripts\HUD\FrameScoreLayout.cs" />
+    <Compile Include="Assets\Scripts\Audio\SoundBoard.cs" />
     <Compile Include="Assets\Scripts\PlayerControls.cs" />
     <Compile Include="Assets\Scripts\Objects\Pin.cs" />
+    <Compile Include="Assets\Scripts\Audio\AudioController.cs" />
     <Compile Include="Assets\Scripts\Objects\Frame.cs" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />

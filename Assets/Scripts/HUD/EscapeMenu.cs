@@ -2,7 +2,7 @@
 
 namespace HUD
 {
-    public class EscapeMenu: MonoBehaviour
+    public class EscapeMenu : MonoBehaviour
     {
     }
 }
