@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3373893440677791868}
   - component: {fileID: 2385315297451292309}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Pin Set
   m_TagString: Untagged
   m_Icon: {fileID: 0}

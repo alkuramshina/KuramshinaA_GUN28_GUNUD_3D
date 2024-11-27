@@ -1017,7 +1017,7 @@ GameObject:
   - component: {fileID: 125924608}
   - component: {fileID: 125924607}
   - component: {fileID: 125924606}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Aiming canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10745,6 +10745,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1681182798}
+  - component: {fileID: 1681182799}
   m_Layer: 0
   m_Name: Ball Starting Point
   m_TagString: Untagged
@@ -10768,6 +10769,20 @@ Transform:
   - {fileID: 125924605}
   m_Father: {fileID: 1887577197}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1681182799
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1681182797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 079bb93491a046269d7ac8a44badce6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraToLookAt: {fileID: 963194227}
+  rotationSpeed: 3
 --- !u!1 &1687365432
 GameObject:
   m_ObjectHideFlags: 0

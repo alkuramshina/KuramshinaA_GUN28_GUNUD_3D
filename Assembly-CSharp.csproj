@@ -49,6 +49,7 @@
     <Compile Include="Assets\Scripts\HUD\UIController.cs" />
     <Compile Include="Assets\Scripts\Objects\PinSet.cs" />
     <Compile Include="Assets\Scripts\HUD\BallButton.cs" />
+    <Compile Include="Assets\Scripts\LookAtCamera.cs" />
     <Compile Include="Assets\Scripts\Game.cs" />
     <Compile Include="Assets\Scripts\Objects\BallType.cs" />
     <Compile Include="Assets\Scripts\Objects\Ball.cs" />

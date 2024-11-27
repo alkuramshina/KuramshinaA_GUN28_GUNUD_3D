@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8214889877937882453}
   - component: {fileID: 5998704721181141928}
   - component: {fileID: 7410590955284929926}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Pin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,4 +148,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c08d6ea0b5294a97bfd49fc058730891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocityThreshold: 5
